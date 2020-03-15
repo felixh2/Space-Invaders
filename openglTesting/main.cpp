@@ -13,16 +13,23 @@
 
 // GLM
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#define ToRadians(x) x*(3.14159f/180.0f)
 
 // Window dimensions
 const GLint WIDTH = 800, HEIGHT = 600;
 
+
 GLuint VAO, VBO, shader, uniformXMove;
+GLuint uniformModel;
 
 bool direction = true;
 float triOffset = 0.0f;
 float triMaxOffset = 1.0f;
 float triIncrement = 0.005f;
+float rotationAngle;
 
 // Vertex shader
 // Must output a clip-space position for that vertex.
@@ -31,10 +38,11 @@ static const char* vShader = "                          \n\
 #version 330										    \n\
 													    \n\
 layout (location=0) in vec3 pos;						\n\
-uniform float xMove;									\n\
+									\n\
+uniform mat4 model;									\n\
 void main()			 									\n\
 {														\n\
-	gl_Position = vec4(pos.x + xMove, pos.y, pos.z ,1.0);						\n\
+	gl_Position = model*vec4(pos.x, pos.y, pos.z ,1.0);						\n\
 }";
 
 // fragment shader
@@ -98,7 +106,8 @@ void CompileShaders() {
 		printf("Error validating program: '%s'\n", eLog);
 	}
 
-	uniformXMove = glGetUniformLocation(shader, "xMove");			// demonstration of uniform variable
+	//uniformXMove = glGetUniformLocation(shader, "xMove");			// demonstration of uniform variable
+	uniformModel = glGetUniformLocation(shader, "model");
 }
 
 void CreateTriangle() {
@@ -216,13 +225,27 @@ int main()
 			}
 		}
 
+
+		 rotationAngle += 0.5;
+		 if (rotationAngle >= 360.0f) {
+			 rotationAngle = 0;
+		 }
+
 		// Clear window
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);					// The GL_COLOR_BUFFER_BIT parameter means that the clear call will affect the color buffer
 
 		glUseProgram(shader);							// The shader program to be used by all subsequent rendering commands
 
-		glUniform1f(uniformXMove, triOffset);			// Demonstration of the uniform variable
+		//glUniform1f(uniformXMove, triOffset);			// Demonstration of the uniform variable
+
+		glm::mat4 model(1.0f);								// The right way to do it
+		
+		//model = glm::translate(model, glm::vec3(triOffset, 0.f, 0.f));		
+		
+		model = glm::rotate(model, ToRadians(rotationAngle), glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 1.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));		
 
 		glBindVertexArray(VAO);
 
