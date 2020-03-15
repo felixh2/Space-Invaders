@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\Glfw\include\GLFW;$(SolutionDir)\..\Glew\include\GL;$(SolutionDir)\..\glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\Glfw\include\GLFW;$(SolutionDir)\..\Glew\include\GL;$(SolutionDir)\..\glm;$(SolutionDir)\..</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)\..\Glew\lib\Release\Win32;$(SolutionDir)\..\Glfw\lib-vc2017</AdditionalLibraryDirectories>
