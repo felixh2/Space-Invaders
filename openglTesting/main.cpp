@@ -22,7 +22,7 @@
 const GLint WIDTH = 800, HEIGHT = 600;
 
 
-GLuint VAO, VBO, shader, uniformXMove;
+GLuint VAO, VBO, IBO, shader, uniformXMove;
 GLuint uniformModel;
 
 bool direction = true;
@@ -38,21 +38,23 @@ static const char* vShader = "                          \n\
 #version 330										    \n\
 													    \n\
 layout (location=0) in vec3 pos;						\n\
-									\n\
+out vec4 vertexColor;									\n\
 uniform mat4 model;									\n\
 void main()			 									\n\
 {														\n\
-	gl_Position = model*vec4(pos.x, pos.y, pos.z ,1.0);						\n\
+	gl_Position = model*vec4(pos, 1.0);						\n\
+	vertexColor = vec4(clamp(pos, 0.0f, 1.0f), 1.0f);													\n\
 }";
 
 // fragment shader
 static const char* fShader = "                          \n\
 #version 330										    \n\
 													    \n\
-out vec4 color;									\n\
+out vec4 color;									        \n\
+in vec4 vertexColor;									\n\
 void main()												\n\
 {														\n\
-	color=vec4(0.0,0.0,1.0,1.0);					\n\
+	color=vertexColor;									\n\
 }";
 
 void AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType) {
@@ -111,20 +113,33 @@ void CompileShaders() {
 }
 
 void CreateTriangle() {
+
+	//https://paroj.github.io/gltut/Positioning/Tut05%20Optimization%20Base%20Vertex.html
+	unsigned short indices[] = {
+		0, 1, 2,
+		0, 2, 3,
+		1, 2, 3,
+		0, 1, 3
+	};
+
 	GLfloat vertices[] = {
 		-0.5f, -0.5f, 0.0f,
 		 0.5f, -0.5f, 0.0f,
 		 0.0f, 1.0f, 0.0f,
+		 0.0f, 0.0f, 1.0f
 
-		 -0.5f, 0.5f, 0.0f,
-		 0.5f, 0.5f, 0.0f,
-		 0.0f, -1.0f, 0.0f
+
 	};
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-	glGenBuffers(1, &VBO);		// Create the buffer object stores handle to the object but does not own any memory yet
+	glGenBuffers(1, &VBO);				// Create the buffer object stores handle to the object but does not own any memory yet
+	
+	glGenBuffers(1, &IBO);													  // IBO- Index Buffer Object - For indexed drawing 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 	glBindBuffer(GL_ARRAY_BUFFER, VBO); // the vertex buffer is bound to the context - GL_ARRAY_BUFFER
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // two operations :
@@ -139,7 +154,8 @@ void CreateTriangle() {
 																			   // second param - how many of these values(GL_FLOAT) represent a single piece of data
 																			   //  glVertexAttribPointer always refers to whatever buffer is bound to GL_ARRAY_BUFFER at the time that this function is called
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0); // By binding the buffer object 0 to GL_ARRAY_BUFFER, we cause the buffer object previously bound to that target to become unbound from it.
+	glBindBuffer(GL_ARRAY_BUFFER, 0);					// By binding the buffer object 0 to GL_ARRAY_BUFFER, we cause the buffer object previously bound to that target to become unbound from it.
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
 }
@@ -196,6 +212,8 @@ int main()
 		return 1;
 	}
 
+	glEnable(GL_DEPTH_TEST);                       // Allow Depth test
+
 	// Setup Viewport size
 	glViewport(0, 0, bufferWidth, bufferHeight);
 
@@ -233,7 +251,7 @@ int main()
 
 		// Clear window
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);					// The GL_COLOR_BUFFER_BIT parameter means that the clear call will affect the color buffer
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);					// The GL_COLOR_BUFFER_BIT parameter means that the clear call will affect the color buffer
 
 		glUseProgram(shader);							// The shader program to be used by all subsequent rendering commands
 
@@ -243,14 +261,20 @@ int main()
 		
 		//model = glm::translate(model, glm::vec3(triOffset, 0.f, 0.f));		
 		
-		model = glm::rotate(model, ToRadians(rotationAngle), glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::rotate(model, ToRadians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 1.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));		
 
 		glBindVertexArray(VAO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 
-		glDrawArrays(GL_TRIANGLES, 0, 6);		// Rendering function. It uses the current state to generate a stream of vertices that will form triangles.
+
+		glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_SHORT, 0);
+		//glDrawArrays(GL_TRIANGLES, 0, 6);		// Rendering function. It uses the current state to generate a stream of vertices that will form triangles.
 												// The second and third parameters represent the start index and the number of indices to read from our vertex data. 
+
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 		glBindVertexArray(0);
 
