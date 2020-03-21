@@ -103,8 +103,8 @@ void Shader::CompileShader(const char * vertexCode, const char * fragmentCode)
 		printf("Error validating program: '%s'\n", eLog);
 	}
 
-	uniformModel = glGetUniformLocation(shaderID, "model");
-	uniformProjection = glGetUniformLocation(shaderID, "projection");
+	uniformModel = glGetUniformLocation(shaderID, "modelToCameraMatrix");
+	uniformProjection = glGetUniformLocation(shaderID, "cameraToClipMatrix");
 
 }
 

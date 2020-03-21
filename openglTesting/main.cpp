@@ -48,6 +48,7 @@ void CreateObjects() {
 		0, 1, 3
 	};
 
+	// Model-Space Coordinates
 	GLfloat vertices[] = {
 		-0.5f, -0.5f, 0.0f,
 		 0.5f, -0.5f, 0.0f,
@@ -59,9 +60,9 @@ void CreateObjects() {
 	obj1->CreateMesh(vertices, indices, 12, 12);
 	meshList.push_back(obj1);
 
-	Mesh *obj2 = new Mesh();
+	/*Mesh *obj2 = new Mesh();
 	obj2->CreateMesh(vertices, indices, 12, 12);
-	meshList.push_back(obj2);
+	meshList.push_back(obj2);*/
 }
 
 void CreateShaders() {
@@ -113,7 +114,7 @@ int main()
 		shaderList[0]->UseShader();
 
 		glm::mat4 model(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.f, -2.5f));				
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -3.0f));				
 		model = glm::rotate(model, ToRadians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 1.0f));
 
@@ -128,9 +129,9 @@ int main()
 		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 1.0f));
 
 		
-		glUniformMatrix4fv(shaderList[0]->GetModelLocation(), 1, GL_FALSE, glm::value_ptr(model));
+	/*	glUniformMatrix4fv(shaderList[0]->GetModelLocation(), 1, GL_FALSE, glm::value_ptr(model));
 
-		meshList[1]->RenderMesh();
+		meshList[1]->RenderMesh();*/
 
 
 		glUseProgram(0);
