@@ -47,6 +47,8 @@ int Window::InitWindow()
 	// Set context for GLEW to use
 	glfwMakeContextCurrent(mainWindow);
 
+	createCallbacks();
+
 	// Allow modern extension features
 	glewExperimental = GL_TRUE;
 
@@ -66,7 +68,48 @@ int Window::InitWindow()
 }
 
 
+void Window::createCallbacks()
+{
+	glfwSetKeyCallback(mainWindow, handleKeys);
 
+}
+
+
+
+float Window::getUp()
+{
+	return up;
+}
+
+void Window::handleKeys(GLFWwindow* window, int key, int code, int action, int mode)
+{
+	Window* theWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
+
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, GL_TRUE);
+	}
+
+	if (key == GLFW_KEY_W) {
+		printf("UP\n");
+		
+	}
+	if (key == GLFW_KEY_S) {
+		printf("DOWN\n");
+	}
+	 
+	if (key >= 0 && key < 1024)
+	{
+		if (action == GLFW_PRESS)
+		{
+			//theWindow->keys[key] = true;
+		}
+		else if (action == GLFW_RELEASE)
+		{
+			//theWindow->keys[key] = false;
+		}
+	}
+}
 
 Window::~Window()
 {

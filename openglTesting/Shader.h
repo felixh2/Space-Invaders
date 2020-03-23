@@ -13,8 +13,9 @@ public:
 	Shader();
 
 	void CreateFromString(const char* vertexCode, const char* fragmentCode);
-	GLuint GetProjectionLocation();
-	GLuint GetModelLocation();
+	GLuint GetProjectionMatrix();
+	GLuint GetModelToWorldLocation();
+	GLuint GetWorldToCameraLocation();
 
 	void UseShader();
 	void ClearShader();
@@ -29,6 +30,6 @@ private:
 	void AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);
 
 private:
-	GLuint shaderID, uniformProjection, uniformModel;
+	GLuint shaderID, uniformCameraToClip, uniformModelToWorld, uniformWorldToCamera;
 };
 

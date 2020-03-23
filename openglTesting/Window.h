@@ -1,5 +1,5 @@
 #pragma once
-
+//#include "Globals.h"
 #include<stdio.h>
 #include<glew.h>
 #include<glfw3.h>
@@ -19,8 +19,12 @@ public:
 	bool GetShouldClose() { return glfwWindowShouldClose(mainWindow); }
 
 	void SwapBuffers(){ glfwSwapBuffers(mainWindow); }
+	float getUp();
 
+	void createCallbacks();
+	static void handleKeys(GLFWwindow* window, int key, int code, int action, int mode);
 	~Window();
+
 
 private:
 
@@ -28,5 +32,7 @@ private:
 	GLint width, height;
 	GLint bufferWidth, bufferHeight;
 
+	bool keys[10];
+	float up;
 };
 

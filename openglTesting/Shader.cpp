@@ -5,8 +5,9 @@
 Shader::Shader()
 {
 	shaderID = 0;
-	uniformProjection = 0;
-	uniformModel = 0;
+	uniformCameraToClip = 0;
+	uniformWorldToCamera = 0;
+	uniformModelToWorld = 0; 
 }
 
 void Shader::CreateFromString(const char * vertexCode, const char * fragmentCode)
@@ -20,14 +21,19 @@ void Shader::CreateFromString(const char * vertexCode, const char * fragmentCode
 	CompileShader(vertexCode, fragmentCode);
 }
 
-GLuint Shader::GetProjectionLocation()
+GLuint Shader::GetProjectionMatrix()
 {
-	return uniformProjection;
+	return uniformCameraToClip;
 }
 
-GLuint Shader::GetModelLocation()
+GLuint Shader::GetModelToWorldLocation()
 {
-	return uniformModel;
+	return uniformModelToWorld;
+}
+
+GLuint Shader::GetWorldToCameraLocation()
+{
+	return uniformWorldToCamera;
 }
 
 void Shader::UseShader()
@@ -103,8 +109,9 @@ void Shader::CompileShader(const char * vertexCode, const char * fragmentCode)
 		printf("Error validating program: '%s'\n", eLog);
 	}
 
-	uniformModel = glGetUniformLocation(shaderID, "modelToCameraMatrix");
-	uniformProjection = glGetUniformLocation(shaderID, "cameraToClipMatrix");
+	uniformWorldToCamera = glGetUniformLocation(shaderID, "worldToCamera");
+	uniformModelToWorld = glGetUniformLocation(shaderID, "modelToWorld");
+	uniformCameraToClip = glGetUniformLocation(shaderID, "cameraToClip");
 
 }
 

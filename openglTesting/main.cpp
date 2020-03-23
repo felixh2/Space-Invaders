@@ -3,6 +3,7 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "Window.h"
+//#include "Globals.h"
 
 // GLEW
 //#define GLEW_STATIC
@@ -16,7 +17,9 @@
 #include <cmath> // for the matematical operator absolute
 
 // GLM
+
 #include <glm/glm.hpp>
+
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -29,6 +32,7 @@ std::vector<Shader*> shaderList;
 
 
 float rotationAngle;
+extern float goForward = 0;
 
 // Vertex shader
 // Must output a clip-space position for that vertex.
@@ -37,6 +41,17 @@ static const char* vShaderLocation = "Shaders/shader.vert";
 
 // fragment shader
 static const char* fShaderLocation = "Shaders/shader.frag";
+
+void PrintMatrix(glm::mat4 theMat) {
+	
+	
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			printf(" %f ", theMat[i][j]);
+		}
+		printf("\n");
+	}
+}
 
 void CreateObjects() {
 
@@ -81,31 +96,35 @@ void Reshape(int w, int h)
 int main()
 {
 
+	
+
 	Window window(800, 600);
 	window.InitWindow();
 
-
+	float zOffset = 0;
+	
 
 	CreateObjects();
 	CreateShaders();
 
 
 	glm::mat4 projection = glm::perspective(45.0f,  ((GLfloat)window.GetBufferWidth())/ window.GetBufferHeight(), 0.1f, 100.0f);
-
-
+	
+	
+	//PrintMatrix(WorldToCamera);
 	// Loop until window closed
 	while (!window.GetShouldClose())
 	{
 		// Get + Handle user input events
 		glfwPollEvents();
 
-	//	glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
-	//	Reshape(bufferWidth, bufferHeight);
-		
 		rotationAngle += 0.5;
 		if (rotationAngle >= 360.0f) {
 			rotationAngle = 0;
 		}
+
+		zOffset += 0.1;
+		
 
 		// Clear window
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -113,25 +132,21 @@ int main()
 
 		shaderList[0]->UseShader();
 
-		glm::mat4 model(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -3.0f));				
-		model = glm::rotate(model, ToRadians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 1.0f));
+		glm::mat4 WorldToCamera(1.0f);
+		WorldToCamera = glm::translate(WorldToCamera, glm::vec3(0.0f, 0.0f, zOffset));
 
-		glUniformMatrix4fv(shaderList[0]->GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(shaderList[0]->GetModelLocation(), 1, GL_FALSE, glm::value_ptr(model));
+		glm::mat4 modelToWorld(1.0f);
+		
+		
+		modelToWorld = glm::translate(modelToWorld, glm::vec3(0.0f, 0.0f, -100.0f));
+		modelToWorld = glm::rotate(modelToWorld, ToRadians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+
+
+		glUniformMatrix4fv(shaderList[0]->GetProjectionMatrix(), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(shaderList[0]->GetModelToWorldLocation(), 1, GL_FALSE, glm::value_ptr(modelToWorld));
+		glUniformMatrix4fv(shaderList[0]->GetWorldToCameraLocation(), 1, GL_FALSE, glm::value_ptr(WorldToCamera));
 
 		meshList[0]->RenderMesh();
-
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(-0.7f, 0.f, -2.5f));
-		model = glm::rotate(model, ToRadians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 1.0f));
-
-		
-	/*	glUniformMatrix4fv(shaderList[0]->GetModelLocation(), 1, GL_FALSE, glm::value_ptr(model));
-
-		meshList[1]->RenderMesh();*/
 
 
 		glUseProgram(0);
