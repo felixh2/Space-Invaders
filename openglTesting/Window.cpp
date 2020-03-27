@@ -81,6 +81,8 @@ int Window::InitWindow()
 
 	// works toghether with  "handleKeys" such that the first param will know which window 
 	glfwSetWindowUserPointer(mainWindow, this);
+
+	mouseFirstMoved = true;
 }
 
 
@@ -131,12 +133,15 @@ void Window::handleMouse(GLFWwindow * window, double xPos, double yPos)
 	
 	if (theWindow->mouseFirstMoved) {
 		theWindow->lastX = xPos;
+		//theWindow->initialOffsetX = xPos;
 		theWindow->lastY = yPos;
 		theWindow->mouseFirstMoved = false;
 	}
-
-	theWindow->xChange = xPos - theWindow->lastX;
-	theWindow->yChange =  theWindow->lastY - yPos;	// Inverted mouse
+	//printf("xPos: %0.02f, lastX: %0.02f, initialPosX: %0.02f \n", xPos, theWindow->lastX, theWindow->initialOffsetX);
+	//printf("yPos: %0.02f, lastY: %0.02f, initialPosY: %0.02f \n", xPos, theWindow->lastY, theWindow->initialOffsetY);
+	
+	theWindow->xChange = xPos - theWindow->lastX ;
+	theWindow->yChange =  theWindow->lastY - yPos ;	// Inverted mouse
 
 	theWindow->lastX = xPos;
 	theWindow->lastY = yPos;

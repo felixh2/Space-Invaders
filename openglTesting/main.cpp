@@ -19,9 +19,10 @@
 // GLM
 
 #include <glm/glm.hpp>
-
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#include "Camera.h"
 
 #define ToRadians(x) x*(3.14159f/180.0f)
 
@@ -67,8 +68,8 @@ void CreateObjects() {
 	GLfloat vertices[] = {
 		-0.5f, -0.5f, 0.0f,
 		 0.5f, -0.5f, 0.0f,
-		 0.0f, 1.0f, 0.0f,
-		 -0.5f, -0.5f, 1.0f
+		 0.0f, 0.5f, 0.0f,
+		 0.0f, -0.5f, 1.0f
 	};
 
 	Mesh *obj1 = new Mesh();
@@ -96,18 +97,17 @@ void Reshape(int w, int h)
 int main()
 {
 
-	
 
 	Window window(800, 600);
 	window.InitWindow();
 
 	float zOffset = 0;
 	
-
+	Camera camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, 90.0f, 0.5f, 0.1f);
 	CreateObjects();
 	CreateShaders();
 
-
+	
 	glm::mat4 projection = glm::perspective(45.0f,  ((GLfloat)window.GetBufferWidth())/ window.GetBufferHeight(), 0.1f, 100.0f);
 	
 	
@@ -115,6 +115,10 @@ int main()
 	// Loop until window closed
 	while (!window.GetShouldClose())
 	{
+		//printf("%0.2f, %0.2f, %0.2f\n", camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
+		camera.KeyControl(window.getKeys());
+		camera.MouseControl(window.getXChange(), window.getYChange());
+
 		// Get + Handle user input events
 		glfwPollEvents();
 
@@ -138,13 +142,13 @@ int main()
 		glm::mat4 modelToWorld(1.0f);
 		
 		
-		modelToWorld = glm::translate(modelToWorld, glm::vec3(0.0f, 0.0f, -100.0f));
+		modelToWorld = glm::translate(modelToWorld, glm::vec3(0.0f, 0.0f, -10.0f));
 		modelToWorld = glm::rotate(modelToWorld, ToRadians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
 
 
 		glUniformMatrix4fv(shaderList[0]->GetProjectionMatrix(), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(shaderList[0]->GetModelToWorldLocation(), 1, GL_FALSE, glm::value_ptr(modelToWorld));
-		glUniformMatrix4fv(shaderList[0]->GetWorldToCameraLocation(), 1, GL_FALSE, glm::value_ptr(WorldToCamera));
+		glUniformMatrix4fv(shaderList[0]->GetWorldToCameraLocation(), 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
 
 		meshList[0]->RenderMesh();
 

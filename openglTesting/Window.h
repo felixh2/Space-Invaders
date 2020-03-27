@@ -6,6 +6,8 @@
 
 class Window
 {
+
+
 public:
 	Window();
 
@@ -30,6 +32,7 @@ public:
 	~Window();
 
 
+
 private:
 
 	GLFWwindow *mainWindow;
@@ -43,6 +46,9 @@ private:
 	GLfloat lastY;
 	GLfloat xChange;
 	GLfloat yChange;
+
+	GLfloat initialOffsetX;
+	//static GLfloat initialOffsetY;
 	bool mouseFirstMoved;
 
 };
