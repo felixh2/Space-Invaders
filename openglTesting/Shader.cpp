@@ -36,6 +36,26 @@ GLuint Shader::GetWorldToCameraLocation()
 	return uniformWorldToCamera;
 }
 
+GLuint Shader::GetAmbientIntensityLocation()
+{
+	return uniformAmbientIntensity;
+}
+
+GLuint Shader::GetAmbientColorLocation()
+{
+	return uniformAmbientColor;
+}
+
+GLuint Shader::GetDiffuseIntensityLocation()
+{
+	return uniformDiffuseIntensity;
+}
+
+GLuint Shader::GetDirectionLocation()
+{
+	return uniformDirection;
+}
+
 void Shader::UseShader()
 {
 	glUseProgram(shaderID);
@@ -99,19 +119,23 @@ void Shader::CompileShader(const char * vertexCode, const char * fragmentCode)
 	glGetProgramiv(shaderID, GL_LINK_STATUS, &result);
 	if (!result) {
 		glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
-		printf("Error linking program: '%s'\n", eLog);
+		printf("Error linking program: %s\n", eLog);
 	}
 
 	glValidateProgram(shaderID);
 	glGetProgramiv(shaderID, GL_VALIDATE_STATUS, &result);
 	if (!result) {
 		glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
-		printf("Error validating program: '%s'\n", eLog);
+		printf("Error validating program: %s\n", eLog);
 	}
 
 	uniformWorldToCamera = glGetUniformLocation(shaderID, "worldToCamera");
 	uniformModelToWorld = glGetUniformLocation(shaderID, "modelToWorld");
 	uniformCameraToClip = glGetUniformLocation(shaderID, "cameraToClip");
+	uniformAmbientColor = glGetUniformLocation(shaderID, "directionalLight.color");
+	uniformAmbientIntensity = glGetUniformLocation(shaderID, "directionalLight.ambientIntensity");
+	uniformDirection = glGetUniformLocation(shaderID, "directionalLight.direction");
+	uniformDiffuseIntensity = glGetUniformLocation(shaderID, "directionalLight.diffuseIntensity");
 
 }
 

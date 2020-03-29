@@ -16,7 +16,10 @@ public:
 	GLuint GetProjectionMatrix();
 	GLuint GetModelToWorldLocation();
 	GLuint GetWorldToCameraLocation();
-
+	GLuint GetAmbientIntensityLocation();
+	GLuint GetAmbientColorLocation();
+	GLuint GetDiffuseIntensityLocation();
+	GLuint GetDirectionLocation();
 	void UseShader();
 	void ClearShader();
 
@@ -31,5 +34,7 @@ private:
 
 private:
 	GLuint shaderID, uniformCameraToClip, uniformModelToWorld, uniformWorldToCamera;
+	GLuint uniformAmbientIntensity, uniformAmbientColor;
+	GLuint uniformDirection, uniformDiffuseIntensity;
 };
 

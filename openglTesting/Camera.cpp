@@ -35,34 +35,38 @@ glm::vec3 Camera::GetPosition()
 	return position;
 }
 
-void Camera::KeyControl(bool * keys)
+void Camera::KeyControl(bool * keys, GLfloat deltaTime)
 {
+	GLfloat velocity = movementSpeed * deltaTime;
+
 	if (keys[GLFW_KEY_W])
 	{
-		position += front * movementSpeed;
+		position += front * velocity;
 	}
 
 	if (keys[GLFW_KEY_S])
 	{
-		position -= front * movementSpeed;
+		position -= front * velocity;
 	}
 
 	if (keys[GLFW_KEY_D])
 	{
-		position += right * movementSpeed;
+		position += right * velocity;
 	}
 
 	if (keys[GLFW_KEY_A])
 	{
-		position -= right * movementSpeed;
+		position -= right * velocity;
 	}
 
 }
 
 void Camera::MouseControl(GLfloat xChange, GLfloat yChange)
 {
-	yaw -= xChange;
-	pitch -= yChange;
+	yaw -= xChange * turnSpeed;
+	pitch -= yChange * turnSpeed;
+
+
 
 	front.x = cos(glm::radians(yaw)) * sin(glm::radians(pitch));
 	front.y = cos(glm::radians(pitch));
