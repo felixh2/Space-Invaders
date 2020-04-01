@@ -3,11 +3,15 @@
 
 #include <iostream>
 #include <vector>
+//#include "Globals.h"
+
 #include "Mesh.h"
 #include "Shader.h"
 #include "Window.h"
 #include "Light.h"
-//#include "Globals.h"
+#include "Camera.h"
+#include "Texture.h"
+#include "PointLight.h"
 
 // GLEW
 //#define GLEW_STATIC
@@ -26,8 +30,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Camera.h"
-#include "Texture.h"
+
 
 #define ToRadians(x) x*(3.14159f/180.0f)
 
@@ -163,7 +166,7 @@ int main()
 	dirtTexture.LoadTexture();
 
 	Light mainLight(1.0f, 1.0f, 1.0f, 0.1f, 2.0f, 0.0f, 0.0f, 1.0f);
-
+	PointLight pointLight(1.0f, 1.0f, 1.0f, 1.0f, 0.045f, 0.0075f, glm::vec3(2.0f, 0.0f,-2.0f));
 
 	
 	glm::mat4 projection = glm::perspective(45.0f,  ((GLfloat)window.GetBufferWidth())/ window.GetBufferHeight(), 0.1f, 100.0f);
@@ -199,8 +202,8 @@ int main()
 
 		shaderList[0]->UseShader();
 
-		glm::mat4 WorldToCamera(1.0f);
-		WorldToCamera = glm::translate(WorldToCamera, glm::vec3(0.0f, 0.0f, zOffset));
+		//glm::mat4 WorldToCamera(1.0f);
+		//WorldToCamera = glm::translate(WorldToCamera, glm::vec3(0.0f, 0.0f, zOffset));
 
 		glm::mat4 modelToWorld(1.0f);
 		
@@ -214,10 +217,17 @@ int main()
 		glUniformMatrix4fv(shaderList[0]->GetWorldToCameraLocation(), 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
 		
 		brickTexture.UseTexture();
+
 		mainLight.UseLight( shaderList[0]->GetAmbientIntensityLocation(),
 						    shaderList[0]->GetAmbientColorLocation(),
 							shaderList[0]->GetDiffuseIntensityLocation(),
 							shaderList[0]->GetDirectionLocation()
+		);
+		pointLight.UsePointLight(shaderList[0]->GetPointLightQuadraticLocation(),
+								 shaderList[0]->GetPointLightLinearLocation(),
+								 shaderList[0]->GetPointLightConstLocation(),
+								 shaderList[0]->GetPointLightPositionLocation(),
+							     shaderList[0]->GetPointLightColorLocation()
 		);
 
 		meshList[0]->RenderMesh();

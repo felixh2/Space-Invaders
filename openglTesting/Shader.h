@@ -20,6 +20,15 @@ public:
 	GLuint GetAmbientColorLocation();
 	GLuint GetDiffuseIntensityLocation();
 	GLuint GetDirectionLocation();
+
+	// point light
+	GLuint GetPointLightDirectionLocation();
+	GLuint GetPointLightPositionLocation();
+	GLuint GetPointLightQuadraticLocation();
+	GLuint GetPointLightLinearLocation();
+	GLuint GetPointLightConstLocation();
+	GLuint GetPointLightColorLocation();
+
 	void UseShader();
 	void ClearShader();
 
@@ -34,7 +43,13 @@ private:
 
 private:
 	GLuint shaderID, uniformCameraToClip, uniformModelToWorld, uniformWorldToCamera;
+
+	// Light
 	GLuint uniformAmbientIntensity, uniformAmbientColor;
 	GLuint uniformDirection, uniformDiffuseIntensity;
+
+	// Point Light
+	GLuint uniformPointLightDirection, uniformPointLightPosition, uniformPointLightColor;
+	GLuint uniformPointLightQuadratic, uniformPointLightLinear, uniformPointLightConst;
 };
 

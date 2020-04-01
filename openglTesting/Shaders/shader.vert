@@ -8,6 +8,7 @@ layout (location=2) in vec3 norm;
 out vec4 vertexColor;
 out vec2 TexCoord;
 out vec3 Normal;
+out vec4 vertexPosInWorld;
 
 //uniform mat4 model;
 //uniform mat4 projection;
@@ -28,4 +29,7 @@ void main()
 	// for none uniform scaling use the 'transpose(inverse(x))'. 
 	// if the scaling is uniform - no need to do this
 	Normal = mat3(transpose(inverse(modelToWorld))) * norm;  
+
+
+	vertexPosInWorld = modelToWorld * vec4(pos, 1.0);
 }

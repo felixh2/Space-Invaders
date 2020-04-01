@@ -56,6 +56,36 @@ GLuint Shader::GetDirectionLocation()
 	return uniformDirection;
 }
 
+GLuint Shader::GetPointLightDirectionLocation()
+{
+	return uniformPointLightDirection;
+}
+
+GLuint Shader::GetPointLightPositionLocation()
+{
+	return uniformPointLightPosition;
+}
+
+GLuint Shader::GetPointLightQuadraticLocation()
+{
+	return uniformPointLightQuadratic;
+}
+
+GLuint Shader::GetPointLightLinearLocation()
+{
+	return uniformPointLightLinear;
+}
+
+GLuint Shader::GetPointLightConstLocation()
+{
+	return uniformPointLightConst;
+}
+
+GLuint Shader::GetPointLightColorLocation()
+{
+	return uniformPointLightColor;
+}
+
 void Shader::UseShader()
 {
 	glUseProgram(shaderID);
@@ -137,6 +167,12 @@ void Shader::CompileShader(const char * vertexCode, const char * fragmentCode)
 	uniformDirection = glGetUniformLocation(shaderID, "directionalLight.direction");
 	uniformDiffuseIntensity = glGetUniformLocation(shaderID, "directionalLight.diffuseIntensity");
 
+	uniformPointLightDirection = glGetUniformLocation(shaderID, "pointLight.direction");
+	uniformPointLightPosition = glGetUniformLocation(shaderID, "pointLight.position");
+	uniformPointLightQuadratic = glGetUniformLocation(shaderID, "pointLight.quadratic");
+	uniformPointLightLinear = glGetUniformLocation(shaderID, "pointLight.linear");
+	uniformPointLightConst = glGetUniformLocation(shaderID, "pointLight.constant");
+	uniformPointLightColor = glGetUniformLocation(shaderID, "pointLight.color");
 }
 
 void Shader::AddShader(GLuint theProgram, const char * shaderCode, GLenum shaderType)
