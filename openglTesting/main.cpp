@@ -6,7 +6,8 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "Window.h"
-#include "Light.h"
+//#include "Light.h"
+#include "DirectionalLight.h"
 //#include "Globals.h"
 
 // GLEW
@@ -162,7 +163,9 @@ int main()
 	dirtTexture = Texture("Textures/Dirt.png");
 	dirtTexture.LoadTexture();
 
-	Light mainLight(1.0f, 1.0f, 1.0f, 0.1f, 2.0f, 0.0f, 0.0f, 1.0f);
+	DirectionalLight directionalLight(1.0f, 1.0f, 1.0f,
+										0.1f, 1.0f,
+										0.0f, 0.0f, -1.0f);
 
 
 	
@@ -214,7 +217,7 @@ int main()
 		glUniformMatrix4fv(shaderList[0]->GetWorldToCameraLocation(), 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
 		
 		brickTexture.UseTexture();
-		mainLight.UseLight( shaderList[0]->GetAmbientIntensityLocation(),
+		directionalLight.UseDirectionalLight( shaderList[0]->GetAmbientIntensityLocation(),
 						    shaderList[0]->GetAmbientColorLocation(),
 							shaderList[0]->GetDiffuseIntensityLocation(),
 							shaderList[0]->GetDirectionLocation()
