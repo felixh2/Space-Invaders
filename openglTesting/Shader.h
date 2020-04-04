@@ -7,6 +7,11 @@
 #include <glew.h>
 #include <fstream>      // std::ifstream
 
+#include "DirectionalLight.h"
+#include "PointLight.h"
+
+#include "CommonValues.h"
+
 class Shader
 {
 public:
@@ -21,6 +26,10 @@ public:
 	GLuint GetDiffuseIntensityLocation();
 	GLuint GetDirectionLocation();
 	void UseShader();
+	void SetDirectionalLight(DirectionalLight *directionalLight);
+
+	void SetPointLights(PointLight* pLight, unsigned int lightCount);
+
 	void ClearShader();
 
 	std::string ReadFromFile(const char* fileLocation);
@@ -33,8 +42,31 @@ private:
 	void AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);
 
 private:
+	int PointLightCount;
+	GLuint uniformPointLightCount;
 	GLuint shaderID, uniformCameraToClip, uniformModelToWorld, uniformWorldToCamera;
-	GLuint uniformAmbientIntensity, uniformAmbientColor;
-	GLuint uniformDirection, uniformDiffuseIntensity;
+	//GLuint uniformAmbientIntensity, uniformAmbientColor;
+	//GLuint uniformDirection, uniformDiffuseIntensity;
+
+	struct {
+		GLuint uniformColor;
+		GLuint uniformAmbientIntensity;
+		GLuint uniformDiffuseIntensity;
+		GLuint uniformDirection;
+
+	} UniformDirectionalLight;
+
+	struct {
+		GLuint uniformColor;
+		GLuint uniformAmbientIntensity;
+		GLuint uniformDiffuseIntensity;
+		GLuint uniformPosition;
+		GLuint uniformConstant;
+		GLuint unifromLinear;
+		GLuint uniformQuadratic;
+
+	} UniformPointLight[MAX_POINT_LIGTHS];
+
+
 };
 

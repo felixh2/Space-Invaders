@@ -132,6 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CommonValues.h" />
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="Light.h" />

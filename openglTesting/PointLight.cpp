@@ -17,6 +17,9 @@ PointLight::PointLight(GLfloat red, GLfloat green, GLfloat blue,
 						GLfloat con, GLfloat lin, GLfloat quad) : Light(red, green, blue, ambientIntens, diffuIntensity )
 {
 	position = glm::vec3(xPos, yPos, zPos);
+	constant = con;
+	linear = lin;
+	quadratic = quad;
 }
 
 void PointLight::UsePointLight(GLfloat ambientItensityLocation, 
