@@ -20,12 +20,12 @@ Texture::Texture(const char* fileLoc)
 	fileLocation = fileLoc;
 }
 
-void Texture::LoadTexture()
+bool Texture::LoadTexture()
 {
 	unsigned char *textData = stbi_load(fileLocation, &width, &height, &bitDepth, 0);
 	if (!textData) {
 		printf("Failed to load: %s", fileLocation);
-		return;
+		return false;
 	}
 
 	glGenTextures(1, &textureID);
@@ -39,12 +39,43 @@ void Texture::LoadTexture()
 	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textData);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	
 	glBindTexture(GL_TEXTURE_2D, 0);
 	stbi_image_free(textData);
 
+
+	return true;
+}
+
+bool Texture::LoadTextureA()
+{
+	unsigned char *textData = stbi_load(fileLocation, &width, &height, &bitDepth, 0);
+	if (!textData) {
+		printf("Failed to load: %s", fileLocation);
+		return false;
+	}
+
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// blending pixels together when zooming in/out 
+	// Second option is GL_NEAREST
+	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	stbi_image_free(textData);
+
+
+	return true;
 }
 
 void Texture::UseTexture()

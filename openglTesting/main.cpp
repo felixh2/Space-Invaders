@@ -11,6 +11,10 @@
 //#include "Globals.h"
 #include "CommonValues.h"
 #include "PointLight.h"
+#include "Camera.h"
+#include "Texture.h"
+#include "Model.h"
+
 // GLEW
 //#define GLEW_STATIC
 //#include <glew.h>
@@ -28,8 +32,13 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Camera.h"
-#include "Texture.h"
+
+
+// ASSIMP
+#include "assimp/include/assimp/Importer.hpp"
+
+
+
 
 #define ToRadians(x) x*(3.14159f/180.0f)
 
@@ -37,6 +46,8 @@
 
 std::vector<Mesh*> meshList;
 std::vector<Shader*> shaderList;
+
+Model house;
 
 Texture brickTexture;
 Texture dirtTexture;
@@ -135,6 +146,19 @@ void CreateObjects() {
 							 10.0f,  0.0f,  10.0f,		10.0f,10.f,		0.0f, -1.0f, 0.0f
 							};
 
+	unsigned int ceilingIndices[] = {
+								0, 1, 2,
+								1, 3, 2
+	};
+
+	GLfloat ceilingVertices[] = {
+		//	 x		y		z		
+			-10.0f,  0.0f, -10.0f,		0.0f,0.0f,		0.0f, -1.0f, 0.0f,
+			 10.0f,	 0.0f, -10.0f,		10.0f,0.0f,		0.0f, -1.0f, 0.0f,
+			-10.0f,  0.0f,  10.0f,	    0.0f,10.0f,		0.0f, -1.0f, 0.0f,
+			 10.0f,  0.0f,  10.0f,		10.0f,10.f,		0.0f, -1.0f, 0.0f
+	};
+
 	calcAverageNormals(indices, 12, vertices, 32, 8, 5);
 
 	Mesh *obj1 = new Mesh();
@@ -144,6 +168,10 @@ void CreateObjects() {
 	Mesh *obj2 = new Mesh();
 	obj2->CreateMesh(floorVertices, floorIndices, 32, 6);
 	meshList.push_back(obj2);
+
+	Mesh *obj3 = new Mesh();
+	obj2->CreateMesh(ceilingVertices, ceilingIndices, 32, 6);
+	meshList.push_back(obj3);
 }
 
 void CreateShaders() {
@@ -162,20 +190,25 @@ void Reshape(int w, int h)
 int main()
 {
 
-
+	//Assimp::Importer importer = Assimp::ReadFile();
 	Window window(800, 600);
 	window.InitWindow();
 
 	float zOffset = 0;
 	
 	Camera camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, 90.0f, 5.0f, .1f);
+
 	CreateObjects();
+
 	CreateShaders();
 
+	house.LoadModel("Models/House.obj");
+
 	brickTexture = Texture("Textures/Brick.png");
-	brickTexture.LoadTexture();
+	brickTexture.LoadTextureA();
 	dirtTexture = Texture("Textures/Dirt.png");
-	dirtTexture.LoadTexture();
+	dirtTexture.LoadTextureA();
+
 
 	DirectionalLight directionalLight(1.0f, 1.0f, 1.0f,
 										0.1f, 1.0f,
@@ -249,7 +282,7 @@ int main()
 		modelToWorld = glm::translate(modelToWorld, glm::vec3(0.0f, 0.0f, -2.5f));
 		modelToWorld = glm::rotate(modelToWorld, ToRadians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		//shaderList[0]->SetDirectionalLight(&directionalLight);
+		shaderList[0]->SetDirectionalLight(&directionalLight);
 		shaderList[0]->SetPointLights(pointLights, pointLightCount);
 
 		glUniformMatrix4fv(shaderList[0]->GetProjectionMatrix(), 1, GL_FALSE, glm::value_ptr(projection));
@@ -261,16 +294,25 @@ int main()
 
 		//--------------------------------------------------------------
 		modelToWorld= glm::mat4(1.0f);
-
-
 		modelToWorld = glm::translate(modelToWorld, glm::vec3(0.0f, -2.0f, 0.0f));
-		
 		glUniformMatrix4fv(shaderList[0]->GetModelToWorldLocation(), 1, GL_FALSE, glm::value_ptr(modelToWorld));
-
-
 		brickTexture.UseTexture();
 		meshList[1]->RenderMesh();
+		//--------------------------------------------------------------
+		modelToWorld = glm::mat4(1.0f);
+		//modelToWorld = glm::rotate(modelToWorld, ToRadians(rotationAngle), glm::vec3(1.0f, 1.0f, 1.0f));
+		modelToWorld = glm::translate(modelToWorld, glm::vec3(0.0f, 2.0f, -2.5f));
+		glUniformMatrix4fv(shaderList[0]->GetModelToWorldLocation(), 1, GL_FALSE, glm::value_ptr(modelToWorld));
+		dirtTexture.UseTexture();
+		meshList[0]->RenderMesh();
 
+
+		modelToWorld = glm::mat4(1.0f);
+		modelToWorld = glm::translate(modelToWorld, glm::vec3(10.0f, 0.0f, -2.5f));
+		modelToWorld = glm::scale(modelToWorld, glm::vec3(0.01f, 0.01f, 0.01f));		
+		glUniformMatrix4fv(shaderList[0]->GetModelToWorldLocation(), 1, GL_FALSE, glm::value_ptr(modelToWorld));
+		
+		house.RenderModel();
 
 		glUseProgram(0);
 
